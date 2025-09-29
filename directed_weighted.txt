@@ -1,0 +1,13 @@
+DIRECTED
+A B 2.5
+A D 4.0
+B C 1.5
+B E 3.2
+C C 0.5
+D E 2.1
+E F 1.8
+F G 2.7
+H 3.3
+I J 4.5
+K
+
