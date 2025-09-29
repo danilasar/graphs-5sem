@@ -1,10 +1,16 @@
 #include "graph.h"
+#include <regex>
+#define TRACE_NEWLINE
+#define TRACE_ROW(f) std::cout << "> " \
+	<< std::regex_replace(#f, std::regex(" *TRACE_NEWLINE *"), "\n> ") << '\n'; \
+	f;
 
 int main() {
 	Graph graph;
 	std::string cmd;
+	std::cout << "help для справки" << std::endl;
 	while (true) {
-		std::cout << "Введи команду (addv, adde, remv, reme, print, save, load, exit): ";
+		std::cout << " $ ";
 		std::cin >> cmd;
 		if (cmd == "addv") {
 			std::string v; std::cin >> v;
@@ -38,7 +44,24 @@ int main() {
 						 " - reme {fromid} {toid}\t- удалить ребро\n"
 						 " - print \t\t- вывести граф\n"
 						 " - save {file}\t\t- сохранить граф в файл\n"
-						 " - load {file}\t\t- загрузить граф из файла";
+						 " - load {file}\t\t- загрузить граф из файла\n"
+						 " - demo \t\t- продемонстрировать работу класса" << std::endl;
+		} else if (cmd == "demo") {
+			TRACE_ROW(
+				graph.addVertex("A"); TRACE_NEWLINE
+				graph.addVertex("B"); TRACE_NEWLINE
+				graph.addVertex("C"); TRACE_NEWLINE
+				graph.addEdge("A", "B"); TRACE_NEWLINE
+				graph.printAdjacencyList()
+			);
+			TRACE_ROW(
+				graph.removeVertex("C"); TRACE_NEWLINE
+				graph.printAdjacencyList()
+			);
+			TRACE_ROW(
+				graph.removeEdge("A", "B"); TRACE_NEWLINE
+				graph.printAdjacencyList()
+			);
 		} else if (cmd == "exit") break;
 	}
 	return 0;
