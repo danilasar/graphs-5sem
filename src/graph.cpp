@@ -20,6 +20,10 @@ Graph::Graph(Type type, const std::vector<std::pair<std::string, std::vector<Edg
 		adjList[v] = edges;
 }
 
+const std::unordered_map<std::string, std::vector<Edge>>& Graph::getAdjList() const {
+		return adjList;
+}
+
 bool Graph::addVertex(const std::string& v) {
 	if (adjList.find(v) != adjList.end())
 		return false;

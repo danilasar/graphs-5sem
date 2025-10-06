@@ -32,6 +32,8 @@ public:
 
 	Graph(Type type, const std::vector<std::pair<std::string, std::vector<Edge>>>& data);
 
+	const std::unordered_map<std::string, std::vector<Edge>>& getAdjList() const;
+
 	bool addVertex(const std::string& v);
 
 	bool addEdge(const std::string& from, const std::string& to,
