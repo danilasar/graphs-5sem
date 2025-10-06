@@ -1,6 +1,0 @@
-DIRECTED
-A B link1 2.5
-A C link2 3.1
-B D link3 1.0
-C C loop 9.0
-E

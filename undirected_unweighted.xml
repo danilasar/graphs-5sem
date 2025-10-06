@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph type="UNDIRECTED">
+	<vertex name="A">
+		<edge target="B"/>
+		<edge target="C"/>
+		<edge target="D"/>
+	</vertex>
+	<vertex name="B">
+		<edge target="E"/>
+	</vertex>
+	<vertex name="C">
+		<edge target="F"/>
+	</vertex>
+	<vertex name="D">
+		<edge target="D" label="loop"/>
+	</vertex>
+	<vertex name="E">
+		<edge target="F"/>
+	</vertex>
+	<vertex name="F">
+		<edge target="G"/>
+	</vertex>
+	<vertex name="G"/>
+	<vertex name="H">
+		<edge target="H" label="loop"/>
+	</vertex>
+	<vertex name="I"/>
+	<vertex name="J"/>
+</graph>

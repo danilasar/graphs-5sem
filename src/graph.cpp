@@ -1,7 +1,9 @@
 #include "graph.h"
+#include "pugixml.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <cstring>
 
 Graph::Graph(Type type) : graphType(type) {}
 
@@ -87,43 +89,107 @@ void Graph::printAdjacencyList(const std::string& filename) const {
 }
 
 void Graph::saveToFile(const std::string& filename) const {
-	std::ofstream fout(filename);
-	fout << (graphType == Type::DIRECTED ? "DIRECTED\n" : "UNDIRECTED\n");
-	for (const auto& [v, edges] : adjList) {
-		for (const auto& e : edges) {
-			fout << v << " " << e.target;
-			if (e.label) fout << " " << *e.label;
-			if (e.weight) fout << " " << *e.weight;
-			fout << "\n";
+	pugi::xml_document doc;
+
+	auto declarationNode = doc.append_child(pugi::node_declaration);
+	declarationNode.append_attribute("version") = "1.0";
+	declarationNode.append_attribute("encoding") = "UTF-8";
+
+	pugi::xml_node root = doc.append_child("graph");
+	root.append_attribute("type") = (graphType == Type::DIRECTED ? "DIRECTED" : "UNDIRECTED");
+
+	for (const auto& [vertexName, edges] : adjList) {
+		pugi::xml_node vertexNode = root.append_child("vertex");
+		vertexNode.append_attribute("name") = vertexName.c_str();
+
+		for (const auto& edge : edges) {
+			pugi::xml_node edgeNode = vertexNode.append_child("edge");
+			edgeNode.append_attribute("target") = edge.target.c_str();
+
+			if (edge.label) {
+				edgeNode.append_attribute("label") = edge.label->c_str();
+			}
+
+			if (edge.weight) {
+				edgeNode.append_attribute("weight") = *edge.weight;
+			}
 		}
 	}
+
+	doc.save_file(filename.c_str(), "  ");
 }
 
 bool Graph::loadFromFile(const std::string& filename) {
 	adjList.clear();
-	std::ifstream fin(filename);
-	std::string type;
-	if (!(fin >> type)) return false;
-	graphType = (type == "UNDIRECTED") ? Type::UNDIRECTED : Type::DIRECTED;
-	std::string from, to, label;
-	double weight;
-	while (fin >> from >> to) {
-		std::optional<std::string> optLabel;
-		std::optional<double> optWeight;
-		if (fin.peek() == ' ') {
-			fin >> label;
-			optLabel = label;
-		}
-		if (fin.peek() == ' ') {
-			fin >> weight;
-			optWeight = weight;
-		}
-		if (adjList.find(from) == adjList.end()) adjList[from] = {};
-		if (adjList.find(to) == adjList.end()) adjList[to] = {};
-		adjList[from].push_back({to, optLabel, optWeight});
-		if (graphType == Type::UNDIRECTED && from != to)
-			adjList[to].push_back({from, optLabel, optWeight});
+
+	pugi::xml_document doc;
+
+	pugi::xml_parse_result result = doc.load_file(filename.c_str());
+	if (!result) {
+		std::cerr << "Ошибка чтения XML: " << result.description()
+				  << ", по смещенрию " << result.offset << std::endl;
+		return false;
 	}
+
+	pugi::xml_node root = doc.child("graph");
+	if (!root) {
+		std::cerr << "Ошибка чтения XML: корневой элемент не найден" << std::endl;
+		return false;
+	}
+
+	const char* typeStr = root.attribute("type").value();
+	if (strcmp(typeStr, "UNDIRECTED") == 0) graphType = Type::UNDIRECTED;
+	else if(strcmp(typeStr, "DIRECTED") == 0) graphType = Type::DIRECTED;
+	else {
+			std::cerr << "Неизвестный тип графа: " << typeStr << std::endl;
+			return false;
+	}
+
+	for (pugi::xml_node vertexNode : root.children("vertex")) {
+		const char* vertexName = vertexNode.attribute("name").value();
+		if (!vertexName || std::string(vertexName).empty()) {
+			std::cerr << "Предупреждение: пропускаю безымянную вершину" << std::endl;
+			continue;
+		}
+
+		std::string vName(vertexName);
+
+		if (adjList.find(vName) == adjList.end()) {
+			adjList[vName] = {};
+		}
+
+		for (pugi::xml_node edgeNode : vertexNode.children("edge")) {
+			const char* targetName = edgeNode.attribute("target").value();
+			if (!targetName || std::string(targetName).empty()) {
+				std::cerr << "Предупреждение: пропускаю ребро из " << vName << " без целевой вершины" << std::endl;
+				continue;
+			}
+
+			std::string target(targetName);
+
+			if (adjList.find(target) == adjList.end()) {
+				adjList[target] = {};
+			}
+
+			std::optional<std::string> label;
+			pugi::xml_attribute labelAttr = edgeNode.attribute("label");
+			if (labelAttr) {
+				label = std::string(labelAttr.value());
+			}
+
+			std::optional<double> weight;
+			pugi::xml_attribute weightAttr = edgeNode.attribute("weight");
+			if (weightAttr) {
+				weight = weightAttr.as_double();
+			}
+
+			adjList[vName].push_back({target, label, weight});
+
+			if (graphType == Type::UNDIRECTED && vName != target) {
+				adjList[target].push_back({vName, label, weight});
+			}
+		}
+	}
+
 	return true;
 }
-

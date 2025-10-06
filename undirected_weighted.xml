@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph type="UNDIRECTED">
+	<vertex name="A">
+		<edge target="B" weight="1.2"/>
+		<edge target="C" weight="2.8"/>
+	</vertex>
+	<vertex name="B">
+		<edge target="D" weight="3.4"/>
+	</vertex>
+	<vertex name="C">
+		<edge target="E" weight="1.9"/>
+	</vertex>
+	<vertex name="D">
+		<edge target="E" weight="2.3"/>
+		<edge target="F" weight="4.1"/>
+	</vertex>
+	<vertex name="E">
+		<edge target="E" label="loop" weight="1.0"/>
+	</vertex>
+	<vertex name="F">
+		<edge target="G" weight="2.6"/>
+	</vertex>
+	<vertex name="G"/>
+	<vertex name="H">
+		<edge target="I" weight="3.7"/>
+	</vertex>
+	<vertex name="I"/>
+	<vertex name="J"/>
+	<vertex name="K"/>
+</graph>
