@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph type="UNDIRECTED">
+	<vertex name="A">
+		<edge target="B" weight="4"/>
+		<edge target="C" weight="3"/>
+	</vertex>
+	<vertex name="B">
+		<edge target="A" weight="4"/>
+		<edge target="C" weight="2"/>
+		<edge target="D" weight="5"/>
+	</vertex>
+	<vertex name="C">
+		<edge target="A" weight="3"/>
+		<edge target="B" weight="2"/>
+		<edge target="D" weight="7"/>
+	</vertex>
+	<vertex name="D">
+		<edge target="B" weight="5"/>
+		<edge target="C" weight="7"/>
+	</vertex>
+</graph>
+

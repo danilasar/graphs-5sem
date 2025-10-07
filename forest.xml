@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph type="DIRECTED">
+	<vertex name="A">
+		<edge target="B" weight="1.0"/>
+	</vertex>
+	<vertex name="B"/>
+	<vertex name="C">
+		<edge target="D" weight="1.0"/>
+		<edge target="E" weight="1.0"/>
+	</vertex>
+	<vertex name="D"/>
+	<vertex name="E"/>
+</graph>
+

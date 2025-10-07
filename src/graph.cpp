@@ -24,6 +24,10 @@ const std::unordered_map<std::string, std::vector<Edge>>& Graph::getAdjList() co
 		return adjList;
 }
 
+Graph::Type Graph::getGraphType() const {
+		return graphType;
+}
+
 bool Graph::addVertex(const std::string& v) {
 	if (adjList.find(v) != adjList.end())
 		return false;
@@ -31,15 +35,21 @@ bool Graph::addVertex(const std::string& v) {
 	return true;
 }
 
+bool Graph::addEdge(const std::string& from, Edge e) {
+	auto& to = e.target;
+	if (adjList.find(from) == adjList.end() || adjList.find(to) == adjList.end())
+		return false;
+	adjList[from].push_back(e);
+	if (graphType == Type::UNDIRECTED && from != to)
+		adjList[to].push_back({from, e.label, e.weight});
+	return true;
+}
+
+// WARN: легаси
 bool Graph::addEdge(const std::string& from, const std::string& to,
 					std::optional<std::string> label,
 					std::optional<double> weight) {
-	if (adjList.find(from) == adjList.end() || adjList.find(to) == adjList.end())
-		return false;
-	adjList[from].push_back({to, label, weight});
-	if (graphType == Type::UNDIRECTED && from != to)
-		adjList[to].push_back({from, label, weight});
-	return true;
+	return addEdge(from, Edge {to, label, weight});
 }
 
 bool Graph::removeVertex(const std::string& v) {
